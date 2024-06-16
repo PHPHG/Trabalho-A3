@@ -1,0 +1,242 @@
+
+//classe produto:
+
+package supernosso;
+
+public class Produto {
+
+    private String nome;
+    private double preco;
+    private int estoque;
+   
+    
+
+    public Produto(String nome, double preco, int estoque ) {
+        this.nome = nome;
+        this.preco = preco;
+        this.estoque= estoque;
+
+    }
+
+    public Produto() {
+
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
+
+    public int getEstoque() {
+
+        return estoque;
+    }
+    public void setEstoque(int estoque) {
+        this.estoque = estoque ;
+    }
+
+    public void incluiEstoque(int quantidade) {
+
+      estoque+= quantidade + estoque;
+    }
+
+    public void tirarEstoque(int quantidade) {
+
+        if (estoque <= quantidade) {
+            estoque -= quantidade;
+
+        } 
+    }
+    @Override
+     public String toString() {
+        return "Nome: " + nome + ", Valor: " + preco + ", Estoque: " + estoque;
+    }
+
+    int getQuantidade() {
+        return 0;
+
+   }    
+    }
+
+
+//classe carrinho:
+
+package supernosso;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Carrinho {
+    private final List<Produto> itens;
+    Produto adicionarItem;
+
+    public Carrinho() {
+        this.itens = new ArrayList<>();
+    }
+  
+    public void adicionarItem(Produto produto, int quantidade) {
+        // Verifica se a quantidade é válida
+        if (quantidade <= 0) {
+            System.out.println("Quantidade inválida. O item não foi adicionado ao carrinho.");
+            return;
+        }
+
+        // Adiciona o produto ao carrinho
+        for (int i = 0; i < quantidade; i++) {
+            this.itens.add(produto);
+          
+        }
+        System.out.println(quantidade + " unidades de " + produto.getNome() + " adicionadas ao carrinho.");
+    }
+  public void removerItem(Produto produto) {
+      
+        // Remove o produto do carrinho, se existir
+      
+        if (this.itens.contains(produto)) {
+            this.itens.remove(produto);
+            System.out.println(produto.getNome() + " removido do carrinho.");
+        } else {
+            System.out.println("O produto não está no carrinho.");
+        }
+    }
+   public void limparCarrinho() {
+       
+        // Remove todos os itens do carrinho
+       
+       this.itens.clear();
+        System.out.println("Carrinho limpo.");
+    }
+        
+    
+    public double calcularTotal() {
+        double total = 0.0;
+        total = this.itens.stream().map((produto) -> produto.getPreco()).reduce(total, (accumulator, _item) -> accumulator + _item);
+        return total;
+    }
+}
+
+
+//classe forma de pagamento:
+package supernosso;
+
+public class FormadePagamento extends Produto {
+    private String cartao_de_credito;
+    private String cartao_de_debito;
+
+    FormadePagamento(String cartao_de_credito, String cartao_de_debito) {
+      
+    }
+
+    FormadePagamento() {
+
+    }
+
+    public class FormaPagamento {
+
+        private String tipo;
+        private double valor;
+
+        public FormaPagamento(String tipo) {
+            this.tipo = tipo;
+
+        }
+
+        public double getValor() {
+            return valor;
+        }
+
+        public void setValor(double valor) {
+            this.valor = valor;
+        }
+
+        @Override
+        public String toString() {
+            return "valor= " + valor;
+        }
+
+        public String getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(String tipo) {
+            this.tipo = tipo;
+        }
+    }
+
+}
+
+//clasee principal:
+
+package supernosso;
+
+import java.util.Scanner;
+
+public class SuperNosso {
+
+    private static Produto produtoSelecionado;
+
+    public static void main(String[] args) {
+        Scanner entrada = new Scanner(System.in);
+        Scanner entradaString = new Scanner(System.in);
+
+        
+        FormadePagamento pagamento1 = new FormadePagamento();
+        FormadePagamento pagamento2 = new FormadePagamento();
+        Carrinho carrinho = new Carrinho();
+
+        Produto p1 = new Produto("Arroz", 29.99, 5);
+        Produto p2 = new Produto("Feijão", 8.99, 2);
+        Produto p3 = new Produto("Carne", 30.00, 10);
+        Produto p4 = new Produto("Fubar", 10.99, 8);
+        Produto p5 = new Produto("Macarrão", 5.99, 4);
+        Produto p6 = new Produto("Oléo", 7.99, 2);
+        Produto[] produtos = {p1, p2, p3, p4, p5, p6};
+        boolean continuarComprando = true;
+
+        while (continuarComprando) {
+            System.out.println("Selecione um Produto (ou digite 0 para finalizar a compra): ");
+            int opcao = entrada.nextInt();
+
+            if (opcao > 0 && opcao <= produtos.length) {
+                Produto selecionado = produtos[opcao - 1]; // Ajuste para indexar corretamente o array
+
+                if (selecionado != null) {
+                    System.out.println("Digite a quantidade desejada: ");
+                    int quantidadeDesejada = entrada.nextInt();
+
+                    if (quantidadeDesejada > selecionado.getEstoque()) {
+                        System.out.println("Desculpe, não há estoque suficiente desse produto.");
+                    } else {
+                        carrinho.adicionarItem(selecionado, quantidadeDesejada);
+                        selecionado.tirarEstoque(quantidadeDesejada); // Remover a quantidade do estoque
+                        System.out.println("");
+                    }
+                }
+            } else if (opcao == 0) {
+                continuarComprando = false;
+            } else {
+                System.out.println("Opção inválida!!!");
+            }
+        }
+
+        double total = carrinho.calcularTotal();
+        System.out.println("Valor total a pagar: n% R$ " + total);
+        
+      
+        
+        
+
+    }
+}
